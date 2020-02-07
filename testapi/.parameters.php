@@ -1,27 +1,31 @@
 <?
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 
+use Bitrix\Main\Loader;
 use Bitrix\Iblock\IblockTable;
-use Bitrix\Iblock\PropertyTable;
 use Bitrix\Iblock\TypeLanguageTable;
+use Bitrix\Highloadblock\HighloadBlockTable;
 
 $arIblockTypes[]='';
 $arIblocks[]='';
-$arIblockProperties[]='';
+$arHBlocks[]='';
 
 
 $arIblockTypesFilter=array(
 	'LANGUAGE_ID' => SITE_ID,
 );
+
 $arIblockTypesResult=TypeLanguageTable::getList(array('filter' => $arIblockTypesFilter))->fetchAll();
 foreach($arIblockTypesResult as $arIblockTypeItem) {
 	$arIblockTypes[$arIblockTypeItem['IBLOCK_TYPE_ID']] = $arIblockTypeItem['NAME'];
 }
 
-if (isset($arCurrentValues['DRESS_IBLOCK_TYPE_ID']) && ($arCurrentValues['DRESS_IBLOCK_TYPE_ID'] != "")) {
+
+
+if (isset($arCurrentValues['OFFICE_IBLOCK_TYPE']) && ($arCurrentValues['OFFICE_IBLOCK_TYPE'] != "")) {
 	
 	$arIblocksFilter=array(
-		'IBLOCK_TYPE_ID' => $arCurrentValues['DRESS_IBLOCK_TYPE_ID'],
+		'IBLOCK_TYPE_ID' => $arCurrentValues['OFFICE_IBLOCK_TYPE'],
 	);
 	$arIblocksResult=IblockTable::getList(array('filter' => $arIblocksFilter))->fetchAll();
 	foreach($arIblocksResult as $arIblockItem) {
@@ -30,61 +34,45 @@ if (isset($arCurrentValues['DRESS_IBLOCK_TYPE_ID']) && ($arCurrentValues['DRESS_
 	
 }
 
-if (isset($arCurrentValues['DRESS_IBLOCK_ID']) && ($arCurrentValues['DRESS_IBLOCK_ID'] != "")) {
-	
-	$arIblockPropertiesFilter=array(
-		'IBLOCK_ID' => $arCurrentValues['DRESS_IBLOCK_ID'],
-		'PROPERTY_TYPE' => array('S'),
-	);
-	$arIblockPropertiesResult=PropertyTable::getList(array('filter' => $arIblockPropertiesFilter))->fetchAll();
-	foreach($arIblockPropertiesResult as $arIblockPropertiesItem) {
-		$arIblockProperties[$arIblockPropertiesItem['ID']] = $arIblockPropertiesItem['NAME'];
-	}
-	
+Loader::includeModule("highloadblock");
+
+$dbHBlocks = HighloadBlockTable::getList(array())->fetchAll();
+foreach($dbHBlocks as $hblock)
+{
+	$arHBlocks[$hblock['ID']] = "[" . $hblock["ID"] . "] " . $hblock["NAME"];
 }
-
-
 
 $arComponentParameters = array(
 	'PARAMETERS'=>array(
-		"API_COLLECTION_URL"=>array(
+		"API_TOKEN"=>array(
 			"PARENT"=>"BASE",
-			"NAME"=>GetMessage("VU_API_COLLECTION_URL"),
+			"NAME"=>GetMessage("VU_API_TOKEN"),
 			"TYPE"=>"STRING",
 			"MULTIPLE"=>"N",
-			"DEFAULT"=>"https://sebekon.ru/api/v2/collection/",
+			"DEFAULT"=>"111222333",
 			"COLS"=>25
 		),
-		"API_COLLECTION_CACHE_TTL"=>array(
-			"PARENT"=>"BASE",
-			"NAME"=>GetMessage("VU_API_COLLECTION_CACHE_TTL"),
-			"TYPE"=>"STRING",
-			"MULTIPLE"=>"N",
-			"DEFAULT"=>"21600",
-			"COLS"=>25
-		),
-		"DRESS_IBLOCK_TYPE_ID" => array(
+		"OFFICE_IBLOCK_TYPE" => array(
 			"PARENT" => "DATA_SOURCE",
-			"NAME" => GetMessage("VU_DRESS_IBLOCK_TYPE"),
+			"NAME" => GetMessage("VU_OFFICE_IBLOCK_TYPE"),
 			"TYPE" => "LIST",
 			"ADDITIONAL_VALUES" => "N",
 			"VALUES" => $arIblockTypes,
 			"REFRESH" => "Y"
 		),
-		"DRESS_IBLOCK_ID" => array(
+		"OFFICE_IBLOCK" => array(
 			"PARENT" => "DATA_SOURCE",
-			"NAME" => GetMessage("VU_DRESS_IBLOCK"),
+			"NAME" => GetMessage("VU_OFFICE_IBLOCK"),
 			"TYPE" => "LIST",
 			"ADDITIONAL_VALUES" => "N",
 			"VALUES" => $arIblocks,
-			"REFRESH" => "Y"
 		),
-		"DRESS_IBLOCK_PROPERTY_COLLECTION_ID" => array(
+		"OFFICE_HLBLOCK" => array(
 			"PARENT" => "DATA_SOURCE",
-			"NAME" => GetMessage("VU_DRESS_IBLOCK_PROPERTY_COLLECTION"),
+			"NAME" => GetMessage("VU_OFFICE_HLBLOCK"),
 			"TYPE" => "LIST",
 			"ADDITIONAL_VALUES" => "N",
-			"VALUES" => $arIblockProperties,
+			"VALUES" => $arHBlocks,
 		),
 	),
 );

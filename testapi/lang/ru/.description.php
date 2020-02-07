@@ -1,3 +1,3 @@
 <?
-$MESS['VU_DRESS_COMPONENT_NAME'] = 'Обновление описаний платьев';
-$MESS['VU_DRESS_COMPONENT_DESCR'] = 'Обновляет описания платьев описаниями коллекций запрошенных по стороннему API';
+$MESS['VU_TESTAPI_COMPONENT_NAME'] = 'Демонстрация REST API';
+$MESS['VU_TESTAPI_COMPONENT_DESCR'] = 'Позволяет работать с офисами через API';
